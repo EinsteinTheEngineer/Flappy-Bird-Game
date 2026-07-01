@@ -5,7 +5,7 @@ A fully playable, responsive browser-based arcade game built with a Python Flask
 ## 🚀 Live Demo / Play Now
 
 Experience the game instantly in your web browser:
-👉 **[Play the Live Demo on Replit](https://cba6fade-11b2-43c4-a010-7776f65856f4-00-yll5j5pzwq1k.riker.replit.dev/)** 
+👉 **[Play the Live Demo on Replit](https://flappy-bird-game--dhruvpbuddy.replit.app)** 
 
 ---
 
