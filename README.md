@@ -43,4 +43,8 @@ If you want to pull this web configuration out of Replit and run it locally on y
    git clone https://github.com/EinsteinTheEngineer/Flappy-Bird-Game.git
    cd Flappy-Bird-Game
 ---
-## AI DECLARATION
+## 🤖 AI DECLARATION
+AI was used in my project but minimally, it was used for the following:
+* The tool was Gemini
+* Used to generate some ideas
+* Used for debugging, and learning more code (specifically tkinter)
