@@ -40,5 +40,5 @@ If you want to pull this web configuration out of Replit and run it locally on y
 ### Installation & Execution
 1. Clone the project and step into the local folder structure:
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/YOUR_REPO.git](https://github.com/YOUR_USERNAME/YOUR_REPO.git)
-   cd YOUR_REPO
+   git clone https://github.com/EinsteinTheEngineer/Flappy-Bird-Game.git
+   cd Flappy-Bird-Game
