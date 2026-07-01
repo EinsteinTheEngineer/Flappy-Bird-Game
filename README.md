@@ -42,3 +42,5 @@ If you want to pull this web configuration out of Replit and run it locally on y
    ```bash
    git clone https://github.com/EinsteinTheEngineer/Flappy-Bird-Game.git
    cd Flappy-Bird-Game
+---
+## AI DECLARATION
