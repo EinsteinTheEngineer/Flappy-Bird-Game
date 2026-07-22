@@ -33,21 +33,26 @@
 
     const WIDTH = 1300;
     const HEIGHT = 600;
-    const GRAVITY = 1;
+    const GRAVITY = 1.0;
     const FLAP_STRENGTH = -11.5;
     const PIPE_SPEED_START = 8;
     const PIPE_GAP = 175;
     const PIPE_SPAWN_RATE = 75;
 
     const BG_COLORS = {
-        skyblue: '#87ceeb',
-        pink: '#ffb6c1',
-        lightblue: '#add8e6',
+        red: '#ff4d4d',
+        orange: '#ffa500',
+        yellow: '#f1c40f',
+        green: '#2ecc71',
+        blue: '#3498db',
+        indigo: '#4b0082',
+        violet: '#ee82ee',
         black: '#000000',
+        lightblue: '#add8e6',
         darkblue: '#00008b'
     };
 
-    let bgColor = BG_COLORS.skyblue;
+    let bgColor = BG_COLORS.lightblue;
     let gameStarted = false;
     let gameRunning = false;
     let gamePaused = false;
@@ -62,14 +67,19 @@
     let pipeIdCounter = 0;
     let passedPipes = new Set();
     let animFrameId = null;
-    let selectedBg = 'skyblue';
+    let selectedBg = 'lightblue';
 
     const BUTTONS = [
-        { label: 'Skyblue', key: 'skyblue', color: '#87ceeb', textColor: '#000' },
-        { label: 'Pink',    key: 'pink',    color: '#ffb6c1', textColor: '#000' },
-        { label: 'Lightblue', key: 'lightblue', color: '#add8e6', textColor: '#000' },
-        { label: 'Black',   key: 'black',   color: '#000000', textColor: '#fff' },
-        { label: 'Darkblue',key: 'darkblue',color: '#00008b', textColor: '#fff' }
+        { label: 'Red',       key: 'red',       color: BG_COLORS.red,       textColor: '#fff' },
+        { label: 'Orange',    key: 'orange',    color: BG_COLORS.orange,    textColor: '#000' },
+        { label: 'Yellow',    key: 'yellow',    color: BG_COLORS.yellow,    textColor: '#000' },
+        { label: 'Green',     key: 'green',     color: BG_COLORS.green,     textColor: '#fff' },
+        { label: 'Blue',      key: 'blue',      color: BG_COLORS.blue,      textColor: '#fff' },
+        { label: 'Indigo',    key: 'indigo',    color: BG_COLORS.indigo,    textColor: '#fff' },
+        { label: 'Violet',    key: 'violet',    color: BG_COLORS.violet,    textColor: '#000' },
+        { label: 'Black',     key: 'black',     color: BG_COLORS.black,     textColor: '#fff' },
+        { label: 'Lightblue', key: 'lightblue', color: BG_COLORS.lightblue, textColor: '#000' },
+        { label: 'Darkblue',  key: 'darkblue',  color: BG_COLORS.darkblue,  textColor: '#fff' }
     ];
 
     let btnRects = [];
@@ -80,11 +90,13 @@
 
         ctx.save();
 
+        // 1. Drop Shadow
         ctx.fillStyle = '#404040';
         ctx.beginPath();
         ctx.ellipse(cx + 28, cy + 33, 30, 30, 0, 0, Math.PI * 2);
         ctx.fill();
 
+        // 2. 3D Body Layers
         ctx.fillStyle = '#de9600';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 2;
@@ -103,11 +115,13 @@
         ctx.ellipse(cx + 26, cy + 22, 18, 17, 0, 0, Math.PI * 2);
         ctx.fill();
 
+        // 3. Belly
         ctx.fillStyle = '#fff3b0';
         ctx.beginPath();
         ctx.ellipse(cx + 25, cy + 46, 20, 12, 0, 0, Math.PI * 2);
         ctx.fill();
 
+        // 4. Eye
         ctx.fillStyle = 'white';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 2;
@@ -126,6 +140,7 @@
         ctx.ellipse(cx + 48, cy + 18, 2, 2, 0, 0, Math.PI * 2);
         ctx.fill();
 
+        // 5. Beak
         ctx.fillStyle = '#e65c00';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 2;
@@ -145,6 +160,7 @@
         ctx.closePath();
         ctx.fill();
 
+        // 6. Wing
         ctx.fillStyle = '#d48800';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;
@@ -168,6 +184,7 @@
 
         ctx.save();
 
+        // --- TOP PIPE ---
         ctx.fillStyle = '#00a825';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 2;
@@ -186,6 +203,7 @@
         ctx.fillStyle = '#00db34';
         ctx.fillRect(pipe.x - capOut + 8, pipe.topHeight - capH + 2, 14, capH - 4);
 
+        // --- BOTTOM PIPE ---
         const botTop = pipe.topHeight + PIPE_GAP;
 
         ctx.fillStyle = '#00a825';
@@ -230,18 +248,18 @@
         ctx.fillText('Select Background Color:', WIDTH / 2, HEIGHT - 120);
 
         btnRects = [];
-        const btnWidth = 100;
-        const btnHeight = 36;
-        const totalW = BUTTONS.length * btnWidth + (BUTTONS.length - 1) * 10;
+        const btnWidth = 85;
+        const btnHeight = 32;
+        const totalW = BUTTONS.length * btnWidth + (BUTTONS.length - 1) * 8;
         let startX = WIDTH / 2 - totalW / 2;
         const btnY = HEIGHT - 90;
 
         BUTTONS.forEach((btn, i) => {
-            const bx = startX + i * (btnWidth + 10);
+            const bx = startX + i * (btnWidth + 8);
             btnRects.push({ x: bx, y: btnY, w: btnWidth, h: btnHeight, key: btn.key });
 
             ctx.fillStyle = btn.color;
-            ctx.strokeStyle = selectedBg === btn.key ? 'yellow' : '#555';
+            ctx.strokeStyle = selectedBg === btn.key ? 'yellow' : '#333';
             ctx.lineWidth = selectedBg === btn.key ? 3 : 1;
             ctx.beginPath();
             ctx.roundRect(bx, btnY, btnWidth, btnHeight, 6);
@@ -249,9 +267,9 @@
             ctx.stroke();
 
             ctx.fillStyle = btn.textColor;
-            ctx.font = '14px Helvetica';
+            ctx.font = '12px Helvetica';
             ctx.textAlign = 'center';
-            ctx.fillText(btn.label, bx + btnWidth / 2, btnY + 23);
+            ctx.fillText(btn.label, bx + btnWidth / 2, btnY + 20);
         });
     }
 
@@ -296,7 +314,7 @@
         ctx.textAlign = 'left';
         ctx.fillText('Score: ' + score, 100, 50);
         ctx.textAlign = 'right';
-        ctx.fillText('High Score: ' + highScore, WIDTH - 100, 50);
+        ctx.fillText('High Score: ' + highScore, WIDTH - 150, 50);
     }
 
     function spawnPipe() {
@@ -342,7 +360,6 @@
         for (const pipe of pipes) {
             const pw = 70;
             const capOut = 6;
-            const capH = 25;
             const pLeft = pipe.x - capOut;
             const pRight = pipe.x + pw + capOut;
 
@@ -390,20 +407,23 @@
     }
 
     canvas.addEventListener('click', (e) => {
-        if (gameStarted) return;
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = WIDTH / rect.width;
-        const scaleY = HEIGHT / rect.height;
-        const mx = (e.clientX - rect.left) * scaleX;
-        const my = (e.clientY - rect.top) * scaleY;
+        if (!gameStarted) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = WIDTH / rect.width;
+            const scaleY = HEIGHT / rect.height;
+            const mx = (e.clientX - rect.left) * scaleX;
+            const my = (e.clientY - rect.top) * scaleY;
 
-        for (const btn of btnRects) {
-            if (mx >= btn.x && mx <= btn.x + btn.w && my >= btn.y && my <= btn.y + btn.h) {
-                selectedBg = btn.key;
-                bgColor = BG_COLORS[btn.key];
-                drawStartScreen();
-                return;
+            for (const btn of btnRects) {
+                if (mx >= btn.x && mx <= btn.x + btn.w && my >= btn.y && my <= btn.y + btn.h) {
+                    selectedBg = btn.key;
+                    bgColor = BG_COLORS[btn.key];
+                    drawStartScreen();
+                    return;
+                }
             }
+        } else if (gameRunning && !gamePaused) {
+            birdVelocity = FLAP_STRENGTH;
         }
     });
 
@@ -430,13 +450,6 @@
             if (!gameRunning) {
                 resetToMenu();
             }
-        }
-    });
-
-    canvas.addEventListener('click', (e) => {
-        if (!gameStarted) return;
-        if (gameRunning && !gamePaused) {
-            birdVelocity = FLAP_STRENGTH;
         }
     });
 
