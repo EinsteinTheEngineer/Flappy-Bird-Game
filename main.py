@@ -7,12 +7,15 @@ import asyncio
 # ==========================================
 WIDTH = 1300
 HEIGHT = 600
-GRAVITY = 1.5
-FLAP_STRENGTH = -15
+#How fast the bird falls, hence gravity
+GRAVITY = 1.0
+#How fast the bird will jump up after falling
+FLAP_STRENGTH = -11.5
 PIPE_SPEED_START = 8
-PIPE_GAP = 160
-PIPE_SPAWN_RATE = 90  # Frames between pipe spawns (~1.5 seconds)
-
+#This can also be changed if you wish to make it easier or harder
+PIPE_GAP = 175
+PIPE_SPAWN_RATE = 75  # Frames between pipe spawns (~1.5 seconds)
+#I put it all in a class just for the ease of debugging it cause i dont have to worry about all the fuctions and stuff ye
 class FlappyBirdGame:
     def __init__(self, root):
         self.root = root
@@ -60,10 +63,10 @@ class FlappyBirdGame:
         self.window.create_text(WIDTH/2, HEIGHT - 120, text="Select Background Color:", font=("Helvetica", 16, "bold"), fill="white", tag="menu")
         
         # Interactive Color Buttons
-        colors = ["skyblue", "pink", "lightblue", "black", "darkblue"]
+        colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet", "black", "lightblue", "darkblue"]
         self.btn_frame = tk.Frame(self.root, bg=self.bg_color)
         self.window.create_window(WIDTH/2, HEIGHT - 70, window=self.btn_frame)
-        
+        #the creation of the color button on the start screen
         for c in colors:
             btn = tk.Button(self.btn_frame, text=c.capitalize(), bg=c, fg="white" if c in ["black", "darkblue"] else "black",
                             command=lambda col=c: self.change_background(col))
