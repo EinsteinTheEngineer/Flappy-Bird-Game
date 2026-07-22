@@ -33,11 +33,13 @@
 
     const WIDTH = 1300;
     const HEIGHT = 600;
-    const GRAVITY = 1.0;
-    const FLAP_STRENGTH = -11.5;
-    const PIPE_SPEED_START = 8;
-    const PIPE_GAP = 175;
-    const PIPE_SPAWN_RATE = 75;
+
+    // Adjusted physics constants for a slower, smooth speed
+    const GRAVITY = 0.45;
+    const FLAP_STRENGTH = -8.5;
+    const PIPE_SPEED_START = 4.0;
+    const PIPE_GAP = 180;
+    const PIPE_SPAWN_RATE = 110;
 
     const BG_COLORS = {
         red: '#ff4d4d',
@@ -59,7 +61,7 @@
     let score = 0;
     let highScore = 0;
     let birdVelocity = 0;
-    let birdY = 300;
+    let birdY = 250;
     const BIRD_X = 200;
     let pipeSpeed = PIPE_SPEED_START;
     let spawnTimer = 0;
@@ -69,10 +71,9 @@
     let animFrameId = null;
     let selectedBg = 'lightblue';
 
-    // Delta-time delta control for high refresh rate screens
-    let lastTime = 0;
-    const FPS = 60;
-    const frameInterval = 1000 / FPS;
+    // Strict 60FPS tick control
+    let lastTimestamp = 0;
+    const TIME_PER_FRAME = 1000 / 60; // 16.67ms per update
 
     const BUTTONS = [
         { label: 'Red',       key: 'red',       color: BG_COLORS.red,       textColor: '#fff' },
@@ -101,7 +102,7 @@
         ctx.ellipse(cx + 28, cy + 33, 30, 30, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // 2. 3D Body Layers
+        // 2. 3D Body
         ctx.fillStyle = '#de9600';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 2;
@@ -327,28 +328,33 @@
         pipes.push({ x: WIDTH, topHeight: space, id: pipeIdCounter++ });
     }
 
+    function updateGameLogic() {
+        spawnTimer++;
+        if (spawnTimer >= PIPE_SPAWN_RATE) {
+            spawnPipe();
+            spawnTimer = 0;
+        }
+
+        birdVelocity += GRAVITY;
+        birdY += birdVelocity;
+
+        pipes.forEach(p => { p.x -= pipeSpeed; });
+        pipes = pipes.filter(p => p.x + 70 + 6 > -20);
+
+        checkScore();
+    }
+
     function gameLoop(timestamp) {
         if (!gameRunning || gamePaused) return;
 
-        if (!lastTime) lastTime = timestamp;
-        const elapsed = timestamp - lastTime;
+        if (!lastTimestamp) lastTimestamp = timestamp;
+        const delta = timestamp - lastTimestamp;
 
-        if (elapsed > frameInterval) {
-            lastTime = timestamp - (elapsed % frameInterval);
+        if (delta >= TIME_PER_FRAME) {
+            lastTimestamp = timestamp - (delta % TIME_PER_FRAME);
 
-            spawnTimer++;
-            if (spawnTimer >= PIPE_SPAWN_RATE) {
-                spawnPipe();
-                spawnTimer = 0;
-            }
+            updateGameLogic();
 
-            birdVelocity += GRAVITY;
-            birdY += birdVelocity;
-
-            pipes.forEach(p => { p.x -= pipeSpeed; });
-            pipes = pipes.filter(p => p.x + 70 + 6 > -20);
-
-            checkScore();
             if (checkCollision()) {
                 if (score > highScore) highScore = score;
                 gameRunning = false;
@@ -390,7 +396,7 @@
             if (pipe.x + 70 < BIRD_X && !passedPipes.has(pipe.id)) {
                 passedPipes.add(pipe.id);
                 score++;
-                if (score % 3 === 0) pipeSpeed += 1.5;
+                if (score % 3 === 0) pipeSpeed += 0.5;
             }
         }
     }
@@ -407,7 +413,7 @@
         passedPipes = new Set();
         spawnTimer = 0;
         pipeIdCounter = 0;
-        lastTime = 0;
+        lastTimestamp = 0;
         if (animFrameId) cancelAnimationFrame(animFrameId);
         animFrameId = requestAnimationFrame(gameLoop);
     }
@@ -457,7 +463,7 @@
                 drawGame();
             } else if (gamePaused) {
                 gamePaused = false;
-                lastTime = 0;
+                lastTimestamp = 0;
                 animFrameId = requestAnimationFrame(gameLoop);
             }
         }
